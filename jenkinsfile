@@ -1,0 +1,30 @@
+pipeline {
+    agent {
+        label "master"
+    }
+stages {
+        stage("clone code") {
+            steps {
+                script {
+                    // Let's clone the source
+                    git 'https://github.com/ValaxyTech/hello-world.git';
+                }
+            }
+        }
+        stage("mvn build") {
+            steps {
+                script {
+                    def mvnHome = tool name: 'M2_HOME', type: 'maven'
+                    sh "${mvnHome}/bin/mvn -B -DskipTests clean package"
+                }
+            }
+        }
+	    stage ("Deploy") {
+		 steps {
+		     script {
+                 sh 'cp /var/lib/jenkins/workspace/maven-deploy-war/webapp/target/webapp.war /opt/apache-tomcat-9.0.30/webapps/'	    
+				}
+			}	
+        }	
+    }
+}	
